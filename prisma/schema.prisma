@@ -22,3 +22,29 @@ model AdminUser {
   username String @unique
   password String
 }
+
+model Article {
+  id        String   @id @default(uuid())
+  title     String
+  text      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  articleDomain   ArticleDomain     @relation(fields: [articleDomainId], references: [id])
+  articleDomainId Int
+  articleCategory ArticleCategory[]
+}
+
+model ArticleDomain {
+  id   Int    @id @default(autoincrement())
+  name String @unique
+
+  article Article[]
+}
+
+model ArticleCategory {
+  id   Int    @id @default(autoincrement())
+  name String
+
+  article Article[]
+}
