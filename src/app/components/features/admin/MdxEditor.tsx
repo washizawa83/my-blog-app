@@ -18,8 +18,12 @@ export const MdxEditor = () => {
 
   useEffect(() => {
     ;(async () => {
-      const mdxSource = await serialize(mdxString)
-      setSerializedMdx(mdxSource)
+      try {
+        const mdxSource = await serialize(mdxString)
+        setSerializedMdx(mdxSource)
+      } catch (e) {
+        console.warn('syntax error', e)
+      }
     })()
   }, [mdxString])
 
