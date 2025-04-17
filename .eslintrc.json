@@ -18,10 +18,13 @@
       "@typescript-eslint/no-unused-vars": [
         "warn",
         {
-          "vars": "all",
+          "args": "all",
+          "argsIgnorePattern": "^_",
+          "caughtErrors": "all",
+          "caughtErrorsIgnorePattern": "^_",
+          "destructuredArrayIgnorePattern": "^_",
           "varsIgnorePattern": "^_",
-          "args": "after-used",
-          "argsIgnorePattern": "^_"
+          "ignoreRestSiblings": true
         }
       ],
       "object-shorthand": "error",

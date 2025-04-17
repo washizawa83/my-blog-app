@@ -14,7 +14,7 @@ export const TransactionIsolationLevelSchema = z.enum(['ReadUncommitted','ReadCo
 
 export const AdminUserScalarFieldEnumSchema = z.enum(['id','username','password']);
 
-export const ArticleScalarFieldEnumSchema = z.enum(['id','title','text','createdAt','updatedAt','articleDomainId']);
+export const ArticleScalarFieldEnumSchema = z.enum(['id','title','text','isPublic','createdAt','updatedAt','articleDomainId']);
 
 export const ArticleDomainScalarFieldEnumSchema = z.enum(['id','name']);
 
@@ -23,6 +23,11 @@ export const ArticleCategoryScalarFieldEnumSchema = z.enum(['id','name']);
 export const SortOrderSchema = z.enum(['asc','desc']);
 
 export const QueryModeSchema = z.enum(['default','insensitive']);
+
+export const DomainSchema = z.enum(['FRONTEND','BACKEND','INFRA']);
+
+export type DomainType = `${z.infer<typeof DomainSchema>}`
+
 /////////////////////////////////////////
 // MODELS
 /////////////////////////////////////////
@@ -47,6 +52,7 @@ export const ArticleSchema = z.object({
   id: z.string().uuid(),
   title: z.string(),
   text: z.string(),
+  isPublic: z.boolean(),
   createdAt: z.coerce.date(),
   updatedAt: z.coerce.date(),
   articleDomainId: z.number().int(),
@@ -59,8 +65,8 @@ export type Article = z.infer<typeof ArticleSchema>
 /////////////////////////////////////////
 
 export const ArticleDomainSchema = z.object({
+  name: DomainSchema,
   id: z.number().int(),
-  name: z.string(),
 })
 
 export type ArticleDomain = z.infer<typeof ArticleDomainSchema>
@@ -115,6 +121,7 @@ export const ArticleSelectSchema: z.ZodType<Prisma.ArticleSelect> = z.object({
   id: z.boolean().optional(),
   title: z.boolean().optional(),
   text: z.boolean().optional(),
+  isPublic: z.boolean().optional(),
   createdAt: z.boolean().optional(),
   updatedAt: z.boolean().optional(),
   articleDomainId: z.boolean().optional(),
@@ -245,6 +252,7 @@ export const ArticleWhereInputSchema: z.ZodType<Prisma.ArticleWhereInput> = z.ob
   id: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
   title: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
   text: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
+  isPublic: z.union([ z.lazy(() => BoolFilterSchema),z.boolean() ]).optional(),
   createdAt: z.union([ z.lazy(() => DateTimeFilterSchema),z.coerce.date() ]).optional(),
   updatedAt: z.union([ z.lazy(() => DateTimeFilterSchema),z.coerce.date() ]).optional(),
   articleDomainId: z.union([ z.lazy(() => IntFilterSchema),z.number() ]).optional(),
@@ -256,6 +264,7 @@ export const ArticleOrderByWithRelationInputSchema: z.ZodType<Prisma.ArticleOrde
   id: z.lazy(() => SortOrderSchema).optional(),
   title: z.lazy(() => SortOrderSchema).optional(),
   text: z.lazy(() => SortOrderSchema).optional(),
+  isPublic: z.lazy(() => SortOrderSchema).optional(),
   createdAt: z.lazy(() => SortOrderSchema).optional(),
   updatedAt: z.lazy(() => SortOrderSchema).optional(),
   articleDomainId: z.lazy(() => SortOrderSchema).optional(),
@@ -273,6 +282,7 @@ export const ArticleWhereUniqueInputSchema: z.ZodType<Prisma.ArticleWhereUniqueI
   NOT: z.union([ z.lazy(() => ArticleWhereInputSchema),z.lazy(() => ArticleWhereInputSchema).array() ]).optional(),
   title: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
   text: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
+  isPublic: z.union([ z.lazy(() => BoolFilterSchema),z.boolean() ]).optional(),
   createdAt: z.union([ z.lazy(() => DateTimeFilterSchema),z.coerce.date() ]).optional(),
   updatedAt: z.union([ z.lazy(() => DateTimeFilterSchema),z.coerce.date() ]).optional(),
   articleDomainId: z.union([ z.lazy(() => IntFilterSchema),z.number().int() ]).optional(),
@@ -284,6 +294,7 @@ export const ArticleOrderByWithAggregationInputSchema: z.ZodType<Prisma.ArticleO
   id: z.lazy(() => SortOrderSchema).optional(),
   title: z.lazy(() => SortOrderSchema).optional(),
   text: z.lazy(() => SortOrderSchema).optional(),
+  isPublic: z.lazy(() => SortOrderSchema).optional(),
   createdAt: z.lazy(() => SortOrderSchema).optional(),
   updatedAt: z.lazy(() => SortOrderSchema).optional(),
   articleDomainId: z.lazy(() => SortOrderSchema).optional(),
@@ -301,6 +312,7 @@ export const ArticleScalarWhereWithAggregatesInputSchema: z.ZodType<Prisma.Artic
   id: z.union([ z.lazy(() => StringWithAggregatesFilterSchema),z.string() ]).optional(),
   title: z.union([ z.lazy(() => StringWithAggregatesFilterSchema),z.string() ]).optional(),
   text: z.union([ z.lazy(() => StringWithAggregatesFilterSchema),z.string() ]).optional(),
+  isPublic: z.union([ z.lazy(() => BoolWithAggregatesFilterSchema),z.boolean() ]).optional(),
   createdAt: z.union([ z.lazy(() => DateTimeWithAggregatesFilterSchema),z.coerce.date() ]).optional(),
   updatedAt: z.union([ z.lazy(() => DateTimeWithAggregatesFilterSchema),z.coerce.date() ]).optional(),
   articleDomainId: z.union([ z.lazy(() => IntWithAggregatesFilterSchema),z.number() ]).optional(),
@@ -311,7 +323,7 @@ export const ArticleDomainWhereInputSchema: z.ZodType<Prisma.ArticleDomainWhereI
   OR: z.lazy(() => ArticleDomainWhereInputSchema).array().optional(),
   NOT: z.union([ z.lazy(() => ArticleDomainWhereInputSchema),z.lazy(() => ArticleDomainWhereInputSchema).array() ]).optional(),
   id: z.union([ z.lazy(() => IntFilterSchema),z.number() ]).optional(),
-  name: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
+  name: z.union([ z.lazy(() => EnumDomainFilterSchema),z.lazy(() => DomainSchema) ]).optional(),
   article: z.lazy(() => ArticleListRelationFilterSchema).optional()
 }).strict();
 
@@ -321,24 +333,15 @@ export const ArticleDomainOrderByWithRelationInputSchema: z.ZodType<Prisma.Artic
   article: z.lazy(() => ArticleOrderByRelationAggregateInputSchema).optional()
 }).strict();
 
-export const ArticleDomainWhereUniqueInputSchema: z.ZodType<Prisma.ArticleDomainWhereUniqueInput> = z.union([
-  z.object({
-    id: z.number().int(),
-    name: z.string()
-  }),
-  z.object({
-    id: z.number().int(),
-  }),
-  z.object({
-    name: z.string(),
-  }),
-])
+export const ArticleDomainWhereUniqueInputSchema: z.ZodType<Prisma.ArticleDomainWhereUniqueInput> = z.object({
+  id: z.number().int()
+})
 .and(z.object({
   id: z.number().int().optional(),
-  name: z.string().optional(),
   AND: z.union([ z.lazy(() => ArticleDomainWhereInputSchema),z.lazy(() => ArticleDomainWhereInputSchema).array() ]).optional(),
   OR: z.lazy(() => ArticleDomainWhereInputSchema).array().optional(),
   NOT: z.union([ z.lazy(() => ArticleDomainWhereInputSchema),z.lazy(() => ArticleDomainWhereInputSchema).array() ]).optional(),
+  name: z.union([ z.lazy(() => EnumDomainFilterSchema),z.lazy(() => DomainSchema) ]).optional(),
   article: z.lazy(() => ArticleListRelationFilterSchema).optional()
 }).strict());
 
@@ -357,7 +360,7 @@ export const ArticleDomainScalarWhereWithAggregatesInputSchema: z.ZodType<Prisma
   OR: z.lazy(() => ArticleDomainScalarWhereWithAggregatesInputSchema).array().optional(),
   NOT: z.union([ z.lazy(() => ArticleDomainScalarWhereWithAggregatesInputSchema),z.lazy(() => ArticleDomainScalarWhereWithAggregatesInputSchema).array() ]).optional(),
   id: z.union([ z.lazy(() => IntWithAggregatesFilterSchema),z.number() ]).optional(),
-  name: z.union([ z.lazy(() => StringWithAggregatesFilterSchema),z.string() ]).optional(),
+  name: z.union([ z.lazy(() => EnumDomainWithAggregatesFilterSchema),z.lazy(() => DomainSchema) ]).optional(),
 }).strict();
 
 export const ArticleCategoryWhereInputSchema: z.ZodType<Prisma.ArticleCategoryWhereInput> = z.object({
@@ -451,6 +454,7 @@ export const ArticleCreateInputSchema: z.ZodType<Prisma.ArticleCreateInput> = z.
   id: z.string().uuid().optional(),
   title: z.string(),
   text: z.string(),
+  isPublic: z.boolean(),
   createdAt: z.coerce.date().optional(),
   updatedAt: z.coerce.date().optional(),
   articleDomain: z.lazy(() => ArticleDomainCreateNestedOneWithoutArticleInputSchema),
@@ -461,6 +465,7 @@ export const ArticleUncheckedCreateInputSchema: z.ZodType<Prisma.ArticleUnchecke
   id: z.string().uuid().optional(),
   title: z.string(),
   text: z.string(),
+  isPublic: z.boolean(),
   createdAt: z.coerce.date().optional(),
   updatedAt: z.coerce.date().optional(),
   articleDomainId: z.number().int(),
@@ -471,6 +476,7 @@ export const ArticleUpdateInputSchema: z.ZodType<Prisma.ArticleUpdateInput> = z.
   id: z.union([ z.string().uuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   title: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   text: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  isPublic: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   articleDomain: z.lazy(() => ArticleDomainUpdateOneRequiredWithoutArticleNestedInputSchema).optional(),
@@ -481,6 +487,7 @@ export const ArticleUncheckedUpdateInputSchema: z.ZodType<Prisma.ArticleUnchecke
   id: z.union([ z.string().uuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   title: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   text: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  isPublic: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   articleDomainId: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
@@ -491,6 +498,7 @@ export const ArticleCreateManyInputSchema: z.ZodType<Prisma.ArticleCreateManyInp
   id: z.string().uuid().optional(),
   title: z.string(),
   text: z.string(),
+  isPublic: z.boolean(),
   createdAt: z.coerce.date().optional(),
   updatedAt: z.coerce.date().optional(),
   articleDomainId: z.number().int()
@@ -500,6 +508,7 @@ export const ArticleUpdateManyMutationInputSchema: z.ZodType<Prisma.ArticleUpdat
   id: z.union([ z.string().uuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   title: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   text: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  isPublic: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
 }).strict();
@@ -508,45 +517,46 @@ export const ArticleUncheckedUpdateManyInputSchema: z.ZodType<Prisma.ArticleUnch
   id: z.union([ z.string().uuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   title: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   text: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  isPublic: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   articleDomainId: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
 }).strict();
 
 export const ArticleDomainCreateInputSchema: z.ZodType<Prisma.ArticleDomainCreateInput> = z.object({
-  name: z.string(),
+  name: z.lazy(() => DomainSchema),
   article: z.lazy(() => ArticleCreateNestedManyWithoutArticleDomainInputSchema).optional()
 }).strict();
 
 export const ArticleDomainUncheckedCreateInputSchema: z.ZodType<Prisma.ArticleDomainUncheckedCreateInput> = z.object({
   id: z.number().int().optional(),
-  name: z.string(),
+  name: z.lazy(() => DomainSchema),
   article: z.lazy(() => ArticleUncheckedCreateNestedManyWithoutArticleDomainInputSchema).optional()
 }).strict();
 
 export const ArticleDomainUpdateInputSchema: z.ZodType<Prisma.ArticleDomainUpdateInput> = z.object({
-  name: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  name: z.union([ z.lazy(() => DomainSchema),z.lazy(() => EnumDomainFieldUpdateOperationsInputSchema) ]).optional(),
   article: z.lazy(() => ArticleUpdateManyWithoutArticleDomainNestedInputSchema).optional()
 }).strict();
 
 export const ArticleDomainUncheckedUpdateInputSchema: z.ZodType<Prisma.ArticleDomainUncheckedUpdateInput> = z.object({
   id: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
-  name: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  name: z.union([ z.lazy(() => DomainSchema),z.lazy(() => EnumDomainFieldUpdateOperationsInputSchema) ]).optional(),
   article: z.lazy(() => ArticleUncheckedUpdateManyWithoutArticleDomainNestedInputSchema).optional()
 }).strict();
 
 export const ArticleDomainCreateManyInputSchema: z.ZodType<Prisma.ArticleDomainCreateManyInput> = z.object({
   id: z.number().int().optional(),
-  name: z.string()
+  name: z.lazy(() => DomainSchema)
 }).strict();
 
 export const ArticleDomainUpdateManyMutationInputSchema: z.ZodType<Prisma.ArticleDomainUpdateManyMutationInput> = z.object({
-  name: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  name: z.union([ z.lazy(() => DomainSchema),z.lazy(() => EnumDomainFieldUpdateOperationsInputSchema) ]).optional(),
 }).strict();
 
 export const ArticleDomainUncheckedUpdateManyInputSchema: z.ZodType<Prisma.ArticleDomainUncheckedUpdateManyInput> = z.object({
   id: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
-  name: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  name: z.union([ z.lazy(() => DomainSchema),z.lazy(() => EnumDomainFieldUpdateOperationsInputSchema) ]).optional(),
 }).strict();
 
 export const ArticleCategoryCreateInputSchema: z.ZodType<Prisma.ArticleCategoryCreateInput> = z.object({
@@ -636,6 +646,11 @@ export const StringWithAggregatesFilterSchema: z.ZodType<Prisma.StringWithAggreg
   _max: z.lazy(() => NestedStringFilterSchema).optional()
 }).strict();
 
+export const BoolFilterSchema: z.ZodType<Prisma.BoolFilter> = z.object({
+  equals: z.boolean().optional(),
+  not: z.union([ z.boolean(),z.lazy(() => NestedBoolFilterSchema) ]).optional(),
+}).strict();
+
 export const DateTimeFilterSchema: z.ZodType<Prisma.DateTimeFilter> = z.object({
   equals: z.coerce.date().optional(),
   in: z.coerce.date().array().optional(),
@@ -677,6 +692,7 @@ export const ArticleCountOrderByAggregateInputSchema: z.ZodType<Prisma.ArticleCo
   id: z.lazy(() => SortOrderSchema).optional(),
   title: z.lazy(() => SortOrderSchema).optional(),
   text: z.lazy(() => SortOrderSchema).optional(),
+  isPublic: z.lazy(() => SortOrderSchema).optional(),
   createdAt: z.lazy(() => SortOrderSchema).optional(),
   updatedAt: z.lazy(() => SortOrderSchema).optional(),
   articleDomainId: z.lazy(() => SortOrderSchema).optional()
@@ -690,6 +706,7 @@ export const ArticleMaxOrderByAggregateInputSchema: z.ZodType<Prisma.ArticleMaxO
   id: z.lazy(() => SortOrderSchema).optional(),
   title: z.lazy(() => SortOrderSchema).optional(),
   text: z.lazy(() => SortOrderSchema).optional(),
+  isPublic: z.lazy(() => SortOrderSchema).optional(),
   createdAt: z.lazy(() => SortOrderSchema).optional(),
   updatedAt: z.lazy(() => SortOrderSchema).optional(),
   articleDomainId: z.lazy(() => SortOrderSchema).optional()
@@ -699,6 +716,7 @@ export const ArticleMinOrderByAggregateInputSchema: z.ZodType<Prisma.ArticleMinO
   id: z.lazy(() => SortOrderSchema).optional(),
   title: z.lazy(() => SortOrderSchema).optional(),
   text: z.lazy(() => SortOrderSchema).optional(),
+  isPublic: z.lazy(() => SortOrderSchema).optional(),
   createdAt: z.lazy(() => SortOrderSchema).optional(),
   updatedAt: z.lazy(() => SortOrderSchema).optional(),
   articleDomainId: z.lazy(() => SortOrderSchema).optional()
@@ -706,6 +724,14 @@ export const ArticleMinOrderByAggregateInputSchema: z.ZodType<Prisma.ArticleMinO
 
 export const ArticleSumOrderByAggregateInputSchema: z.ZodType<Prisma.ArticleSumOrderByAggregateInput> = z.object({
   articleDomainId: z.lazy(() => SortOrderSchema).optional()
+}).strict();
+
+export const BoolWithAggregatesFilterSchema: z.ZodType<Prisma.BoolWithAggregatesFilter> = z.object({
+  equals: z.boolean().optional(),
+  not: z.union([ z.boolean(),z.lazy(() => NestedBoolWithAggregatesFilterSchema) ]).optional(),
+  _count: z.lazy(() => NestedIntFilterSchema).optional(),
+  _min: z.lazy(() => NestedBoolFilterSchema).optional(),
+  _max: z.lazy(() => NestedBoolFilterSchema).optional()
 }).strict();
 
 export const DateTimeWithAggregatesFilterSchema: z.ZodType<Prisma.DateTimeWithAggregatesFilter> = z.object({
@@ -736,6 +762,13 @@ export const IntWithAggregatesFilterSchema: z.ZodType<Prisma.IntWithAggregatesFi
   _sum: z.lazy(() => NestedIntFilterSchema).optional(),
   _min: z.lazy(() => NestedIntFilterSchema).optional(),
   _max: z.lazy(() => NestedIntFilterSchema).optional()
+}).strict();
+
+export const EnumDomainFilterSchema: z.ZodType<Prisma.EnumDomainFilter> = z.object({
+  equals: z.lazy(() => DomainSchema).optional(),
+  in: z.lazy(() => DomainSchema).array().optional(),
+  notIn: z.lazy(() => DomainSchema).array().optional(),
+  not: z.union([ z.lazy(() => DomainSchema),z.lazy(() => NestedEnumDomainFilterSchema) ]).optional(),
 }).strict();
 
 export const ArticleListRelationFilterSchema: z.ZodType<Prisma.ArticleListRelationFilter> = z.object({
@@ -769,6 +802,16 @@ export const ArticleDomainMinOrderByAggregateInputSchema: z.ZodType<Prisma.Artic
 
 export const ArticleDomainSumOrderByAggregateInputSchema: z.ZodType<Prisma.ArticleDomainSumOrderByAggregateInput> = z.object({
   id: z.lazy(() => SortOrderSchema).optional()
+}).strict();
+
+export const EnumDomainWithAggregatesFilterSchema: z.ZodType<Prisma.EnumDomainWithAggregatesFilter> = z.object({
+  equals: z.lazy(() => DomainSchema).optional(),
+  in: z.lazy(() => DomainSchema).array().optional(),
+  notIn: z.lazy(() => DomainSchema).array().optional(),
+  not: z.union([ z.lazy(() => DomainSchema),z.lazy(() => NestedEnumDomainWithAggregatesFilterSchema) ]).optional(),
+  _count: z.lazy(() => NestedIntFilterSchema).optional(),
+  _min: z.lazy(() => NestedEnumDomainFilterSchema).optional(),
+  _max: z.lazy(() => NestedEnumDomainFilterSchema).optional()
 }).strict();
 
 export const ArticleCategoryCountOrderByAggregateInputSchema: z.ZodType<Prisma.ArticleCategoryCountOrderByAggregateInput> = z.object({
@@ -814,6 +857,10 @@ export const ArticleCategoryUncheckedCreateNestedManyWithoutArticleInputSchema: 
   create: z.union([ z.lazy(() => ArticleCategoryCreateWithoutArticleInputSchema),z.lazy(() => ArticleCategoryCreateWithoutArticleInputSchema).array(),z.lazy(() => ArticleCategoryUncheckedCreateWithoutArticleInputSchema),z.lazy(() => ArticleCategoryUncheckedCreateWithoutArticleInputSchema).array() ]).optional(),
   connectOrCreate: z.union([ z.lazy(() => ArticleCategoryCreateOrConnectWithoutArticleInputSchema),z.lazy(() => ArticleCategoryCreateOrConnectWithoutArticleInputSchema).array() ]).optional(),
   connect: z.union([ z.lazy(() => ArticleCategoryWhereUniqueInputSchema),z.lazy(() => ArticleCategoryWhereUniqueInputSchema).array() ]).optional(),
+}).strict();
+
+export const BoolFieldUpdateOperationsInputSchema: z.ZodType<Prisma.BoolFieldUpdateOperationsInput> = z.object({
+  set: z.boolean().optional()
 }).strict();
 
 export const DateTimeFieldUpdateOperationsInputSchema: z.ZodType<Prisma.DateTimeFieldUpdateOperationsInput> = z.object({
@@ -874,6 +921,10 @@ export const ArticleUncheckedCreateNestedManyWithoutArticleDomainInputSchema: z.
   connectOrCreate: z.union([ z.lazy(() => ArticleCreateOrConnectWithoutArticleDomainInputSchema),z.lazy(() => ArticleCreateOrConnectWithoutArticleDomainInputSchema).array() ]).optional(),
   createMany: z.lazy(() => ArticleCreateManyArticleDomainInputEnvelopeSchema).optional(),
   connect: z.union([ z.lazy(() => ArticleWhereUniqueInputSchema),z.lazy(() => ArticleWhereUniqueInputSchema).array() ]).optional(),
+}).strict();
+
+export const EnumDomainFieldUpdateOperationsInputSchema: z.ZodType<Prisma.EnumDomainFieldUpdateOperationsInput> = z.object({
+  set: z.lazy(() => DomainSchema).optional()
 }).strict();
 
 export const ArticleUpdateManyWithoutArticleDomainNestedInputSchema: z.ZodType<Prisma.ArticleUpdateManyWithoutArticleDomainNestedInput> = z.object({
@@ -984,6 +1035,11 @@ export const NestedIntFilterSchema: z.ZodType<Prisma.NestedIntFilter> = z.object
   not: z.union([ z.number(),z.lazy(() => NestedIntFilterSchema) ]).optional(),
 }).strict();
 
+export const NestedBoolFilterSchema: z.ZodType<Prisma.NestedBoolFilter> = z.object({
+  equals: z.boolean().optional(),
+  not: z.union([ z.boolean(),z.lazy(() => NestedBoolFilterSchema) ]).optional(),
+}).strict();
+
 export const NestedDateTimeFilterSchema: z.ZodType<Prisma.NestedDateTimeFilter> = z.object({
   equals: z.coerce.date().optional(),
   in: z.coerce.date().array().optional(),
@@ -993,6 +1049,14 @@ export const NestedDateTimeFilterSchema: z.ZodType<Prisma.NestedDateTimeFilter> 
   gt: z.coerce.date().optional(),
   gte: z.coerce.date().optional(),
   not: z.union([ z.coerce.date(),z.lazy(() => NestedDateTimeFilterSchema) ]).optional(),
+}).strict();
+
+export const NestedBoolWithAggregatesFilterSchema: z.ZodType<Prisma.NestedBoolWithAggregatesFilter> = z.object({
+  equals: z.boolean().optional(),
+  not: z.union([ z.boolean(),z.lazy(() => NestedBoolWithAggregatesFilterSchema) ]).optional(),
+  _count: z.lazy(() => NestedIntFilterSchema).optional(),
+  _min: z.lazy(() => NestedBoolFilterSchema).optional(),
+  _max: z.lazy(() => NestedBoolFilterSchema).optional()
 }).strict();
 
 export const NestedDateTimeWithAggregatesFilterSchema: z.ZodType<Prisma.NestedDateTimeWithAggregatesFilter> = z.object({
@@ -1036,13 +1100,30 @@ export const NestedFloatFilterSchema: z.ZodType<Prisma.NestedFloatFilter> = z.ob
   not: z.union([ z.number(),z.lazy(() => NestedFloatFilterSchema) ]).optional(),
 }).strict();
 
+export const NestedEnumDomainFilterSchema: z.ZodType<Prisma.NestedEnumDomainFilter> = z.object({
+  equals: z.lazy(() => DomainSchema).optional(),
+  in: z.lazy(() => DomainSchema).array().optional(),
+  notIn: z.lazy(() => DomainSchema).array().optional(),
+  not: z.union([ z.lazy(() => DomainSchema),z.lazy(() => NestedEnumDomainFilterSchema) ]).optional(),
+}).strict();
+
+export const NestedEnumDomainWithAggregatesFilterSchema: z.ZodType<Prisma.NestedEnumDomainWithAggregatesFilter> = z.object({
+  equals: z.lazy(() => DomainSchema).optional(),
+  in: z.lazy(() => DomainSchema).array().optional(),
+  notIn: z.lazy(() => DomainSchema).array().optional(),
+  not: z.union([ z.lazy(() => DomainSchema),z.lazy(() => NestedEnumDomainWithAggregatesFilterSchema) ]).optional(),
+  _count: z.lazy(() => NestedIntFilterSchema).optional(),
+  _min: z.lazy(() => NestedEnumDomainFilterSchema).optional(),
+  _max: z.lazy(() => NestedEnumDomainFilterSchema).optional()
+}).strict();
+
 export const ArticleDomainCreateWithoutArticleInputSchema: z.ZodType<Prisma.ArticleDomainCreateWithoutArticleInput> = z.object({
-  name: z.string()
+  name: z.lazy(() => DomainSchema)
 }).strict();
 
 export const ArticleDomainUncheckedCreateWithoutArticleInputSchema: z.ZodType<Prisma.ArticleDomainUncheckedCreateWithoutArticleInput> = z.object({
   id: z.number().int().optional(),
-  name: z.string()
+  name: z.lazy(() => DomainSchema)
 }).strict();
 
 export const ArticleDomainCreateOrConnectWithoutArticleInputSchema: z.ZodType<Prisma.ArticleDomainCreateOrConnectWithoutArticleInput> = z.object({
@@ -1076,12 +1157,12 @@ export const ArticleDomainUpdateToOneWithWhereWithoutArticleInputSchema: z.ZodTy
 }).strict();
 
 export const ArticleDomainUpdateWithoutArticleInputSchema: z.ZodType<Prisma.ArticleDomainUpdateWithoutArticleInput> = z.object({
-  name: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  name: z.union([ z.lazy(() => DomainSchema),z.lazy(() => EnumDomainFieldUpdateOperationsInputSchema) ]).optional(),
 }).strict();
 
 export const ArticleDomainUncheckedUpdateWithoutArticleInputSchema: z.ZodType<Prisma.ArticleDomainUncheckedUpdateWithoutArticleInput> = z.object({
   id: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
-  name: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  name: z.union([ z.lazy(() => DomainSchema),z.lazy(() => EnumDomainFieldUpdateOperationsInputSchema) ]).optional(),
 }).strict();
 
 export const ArticleCategoryUpsertWithWhereUniqueWithoutArticleInputSchema: z.ZodType<Prisma.ArticleCategoryUpsertWithWhereUniqueWithoutArticleInput> = z.object({
@@ -1112,6 +1193,7 @@ export const ArticleCreateWithoutArticleDomainInputSchema: z.ZodType<Prisma.Arti
   id: z.string().uuid().optional(),
   title: z.string(),
   text: z.string(),
+  isPublic: z.boolean(),
   createdAt: z.coerce.date().optional(),
   updatedAt: z.coerce.date().optional(),
   articleCategory: z.lazy(() => ArticleCategoryCreateNestedManyWithoutArticleInputSchema).optional()
@@ -1121,6 +1203,7 @@ export const ArticleUncheckedCreateWithoutArticleDomainInputSchema: z.ZodType<Pr
   id: z.string().uuid().optional(),
   title: z.string(),
   text: z.string(),
+  isPublic: z.boolean(),
   createdAt: z.coerce.date().optional(),
   updatedAt: z.coerce.date().optional(),
   articleCategory: z.lazy(() => ArticleCategoryUncheckedCreateNestedManyWithoutArticleInputSchema).optional()
@@ -1159,6 +1242,7 @@ export const ArticleScalarWhereInputSchema: z.ZodType<Prisma.ArticleScalarWhereI
   id: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
   title: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
   text: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
+  isPublic: z.union([ z.lazy(() => BoolFilterSchema),z.boolean() ]).optional(),
   createdAt: z.union([ z.lazy(() => DateTimeFilterSchema),z.coerce.date() ]).optional(),
   updatedAt: z.union([ z.lazy(() => DateTimeFilterSchema),z.coerce.date() ]).optional(),
   articleDomainId: z.union([ z.lazy(() => IntFilterSchema),z.number() ]).optional(),
@@ -1168,6 +1252,7 @@ export const ArticleCreateWithoutArticleCategoryInputSchema: z.ZodType<Prisma.Ar
   id: z.string().uuid().optional(),
   title: z.string(),
   text: z.string(),
+  isPublic: z.boolean(),
   createdAt: z.coerce.date().optional(),
   updatedAt: z.coerce.date().optional(),
   articleDomain: z.lazy(() => ArticleDomainCreateNestedOneWithoutArticleInputSchema)
@@ -1177,6 +1262,7 @@ export const ArticleUncheckedCreateWithoutArticleCategoryInputSchema: z.ZodType<
   id: z.string().uuid().optional(),
   title: z.string(),
   text: z.string(),
+  isPublic: z.boolean(),
   createdAt: z.coerce.date().optional(),
   updatedAt: z.coerce.date().optional(),
   articleDomainId: z.number().int()
@@ -1221,6 +1307,7 @@ export const ArticleCreateManyArticleDomainInputSchema: z.ZodType<Prisma.Article
   id: z.string().uuid().optional(),
   title: z.string(),
   text: z.string(),
+  isPublic: z.boolean(),
   createdAt: z.coerce.date().optional(),
   updatedAt: z.coerce.date().optional()
 }).strict();
@@ -1229,6 +1316,7 @@ export const ArticleUpdateWithoutArticleDomainInputSchema: z.ZodType<Prisma.Arti
   id: z.union([ z.string().uuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   title: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   text: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  isPublic: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   articleCategory: z.lazy(() => ArticleCategoryUpdateManyWithoutArticleNestedInputSchema).optional()
@@ -1238,6 +1326,7 @@ export const ArticleUncheckedUpdateWithoutArticleDomainInputSchema: z.ZodType<Pr
   id: z.union([ z.string().uuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   title: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   text: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  isPublic: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   articleCategory: z.lazy(() => ArticleCategoryUncheckedUpdateManyWithoutArticleNestedInputSchema).optional()
@@ -1247,6 +1336,7 @@ export const ArticleUncheckedUpdateManyWithoutArticleDomainInputSchema: z.ZodTyp
   id: z.union([ z.string().uuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   title: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   text: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  isPublic: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
 }).strict();
@@ -1255,6 +1345,7 @@ export const ArticleUpdateWithoutArticleCategoryInputSchema: z.ZodType<Prisma.Ar
   id: z.union([ z.string().uuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   title: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   text: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  isPublic: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   articleDomain: z.lazy(() => ArticleDomainUpdateOneRequiredWithoutArticleNestedInputSchema).optional()
@@ -1264,6 +1355,7 @@ export const ArticleUncheckedUpdateWithoutArticleCategoryInputSchema: z.ZodType<
   id: z.union([ z.string().uuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   title: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   text: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  isPublic: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   articleDomainId: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
@@ -1273,6 +1365,7 @@ export const ArticleUncheckedUpdateManyWithoutArticleCategoryInputSchema: z.ZodT
   id: z.union([ z.string().uuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   title: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   text: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  isPublic: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   articleDomainId: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
