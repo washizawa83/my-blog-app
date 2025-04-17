@@ -1,6 +1,6 @@
 'use client'
 
-import { postArticle } from '@/app/service/auth/article'
+import { postArticle } from '@/app/service/article/article'
 import { useRouter } from 'next/navigation'
 import { Button } from '../../forms.tsx/Button'
 import { EditedArticle } from './MdxEditor'

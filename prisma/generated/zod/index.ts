@@ -60,6 +60,21 @@ export const ArticleSchema = z.object({
 
 export type Article = z.infer<typeof ArticleSchema>
 
+// ARTICLE RELATION SCHEMA
+//------------------------------------------------------
+
+export type ArticleRelations = {
+  articleDomain: ArticleDomainWithRelations;
+  articleCategory: ArticleCategoryWithRelations[];
+};
+
+export type ArticleWithRelations = z.infer<typeof ArticleSchema> & ArticleRelations
+
+export const ArticleWithRelationsSchema: z.ZodType<ArticleWithRelations> = ArticleSchema.merge(z.object({
+  articleDomain: z.lazy(() => ArticleDomainWithRelationsSchema),
+  articleCategory: z.lazy(() => ArticleCategoryWithRelationsSchema).array(),
+}))
+
 /////////////////////////////////////////
 // ARTICLE DOMAIN SCHEMA
 /////////////////////////////////////////
@@ -71,6 +86,19 @@ export const ArticleDomainSchema = z.object({
 
 export type ArticleDomain = z.infer<typeof ArticleDomainSchema>
 
+// ARTICLE DOMAIN RELATION SCHEMA
+//------------------------------------------------------
+
+export type ArticleDomainRelations = {
+  article: ArticleWithRelations[];
+};
+
+export type ArticleDomainWithRelations = z.infer<typeof ArticleDomainSchema> & ArticleDomainRelations
+
+export const ArticleDomainWithRelationsSchema: z.ZodType<ArticleDomainWithRelations> = ArticleDomainSchema.merge(z.object({
+  article: z.lazy(() => ArticleWithRelationsSchema).array(),
+}))
+
 /////////////////////////////////////////
 // ARTICLE CATEGORY SCHEMA
 /////////////////////////////////////////
@@ -81,6 +109,19 @@ export const ArticleCategorySchema = z.object({
 })
 
 export type ArticleCategory = z.infer<typeof ArticleCategorySchema>
+
+// ARTICLE CATEGORY RELATION SCHEMA
+//------------------------------------------------------
+
+export type ArticleCategoryRelations = {
+  article: ArticleWithRelations[];
+};
+
+export type ArticleCategoryWithRelations = z.infer<typeof ArticleCategorySchema> & ArticleCategoryRelations
+
+export const ArticleCategoryWithRelationsSchema: z.ZodType<ArticleCategoryWithRelations> = ArticleCategorySchema.merge(z.object({
+  article: z.lazy(() => ArticleWithRelationsSchema).array(),
+}))
 
 /////////////////////////////////////////
 // SELECT & INCLUDE
