@@ -3,7 +3,7 @@
 import { EditedArticle } from "@/app/components/features/admin/MdxEditor"
 import { prisma } from "../db-util"
 import { v4 as uuidv4 } from 'uuid'
-import { DomainType } from "../../../../prisma/generated/zod"
+import { ArticleWithRelations, DomainType } from "../../../../prisma/generated/zod"
 
 export const upsertArticleCategories = async (categories: string[]) => {
   return Promise.all(categories.map(async (category) => {
@@ -49,4 +49,27 @@ export const postArticle = async (article: EditedArticle, isPublic: boolean) => 
       articleDomainId: domain.id
     }
   })
+}
+
+export const getArticles = async (): Promise<ArticleWithRelations[]> => {
+  return await prisma.article.findMany({
+    include: {
+      articleCategory: true,
+      articleDomain: true
+    }
+  }) as ArticleWithRelations[]
+}
+
+export type ArticleInfoWithRelations = Omit<ArticleWithRelations, 'text'>
+
+export const getArticleInfos = async (): Promise<ArticleInfoWithRelations[]> => {
+  return await prisma.article.findMany({
+    omit: {
+      text: true
+    },
+    include: {
+      articleCategory: true,
+      articleDomain: true
+    }
+  }) as ArticleInfoWithRelations[]
 }
