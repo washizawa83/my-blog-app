@@ -6,6 +6,14 @@ type Props = {
 }
 
 export const ArticleList = ({ articles }: Props) => {
+  if (articles.length === 0) {
+    return (
+      <div>
+        <p>記事がありません</p>
+      </div>
+    )
+  }
+
   return (
     <ul>
       {articles.map((article, i) => (
