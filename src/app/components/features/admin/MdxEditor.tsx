@@ -1,26 +1,76 @@
 'use client'
 
+import matter from 'gray-matter'
 import { MDXRemote, MDXRemoteSerializeResult } from 'next-mdx-remote'
 import { serialize } from 'next-mdx-remote/serialize'
 import { useEffect, useState } from 'react'
-import { Button } from '../../button'
+import { DomainType } from '../../../../../prisma/generated/zod'
+import { Button } from '../../forms.tsx/Button'
 import MdxLayout from '../../mdx/MdxLayout'
+import { ErrorBoundary } from './ErrorBoundary'
+import { MdxEditorHeader } from './MdxEditorHeader'
+
 const components = { Button }
+
+const frontMatterItem = {
+  TITLE: 'title',
+  DOMAIN: 'domain',
+  CATEGORIES: 'categories',
+} as const
+
+const templateFrontMatter = `---
+${frontMatterItem.TITLE}: 
+${frontMatterItem.DOMAIN}: frontend
+${frontMatterItem.CATEGORIES}: []
+---
+`
+
+export type EditedArticle = {
+  title: string
+  domain: DomainType
+  categories: string[]
+  text: string
+}
 
 const INDENT = '  '
 
+const validateEditedArticle = (
+  frontmatter: Record<string, string | string[]>,
+) => {
+  const { title, domain, categories } = frontmatter
+  if (!title || !domain || !categories) return
+  if (
+    Array.isArray(title) ||
+    Array.isArray(domain) ||
+    !Array.isArray(categories)
+  )
+    return
+  if (domain !== 'frontend' && domain !== 'backend' && domain !== 'infra')
+    return
+
+  return { title, domain: domain.toUpperCase() as DomainType, categories }
+}
+
 export const MdxEditor = () => {
-  const [mdxString, setMdxString] = useState('')
+  const [hasRenderError, setHasRenderError] = useState(false)
+  const [mdxString, setMdxString] = useState(templateFrontMatter)
   const [serializedMdx, setSerializedMdx] =
     useState<
       MDXRemoteSerializeResult<Record<string, unknown>, Record<string, unknown>>
     >()
+  const [frontmatter, setFrontmatter] = useState<
+    Record<string, string | string[]>
+  >({})
 
   useEffect(() => {
     ;(async () => {
       try {
-        const mdxSource = await serialize(mdxString)
+        const { content, data } = matter(mdxString)
+        const mdxSource = await serialize(content, {
+          scope: data,
+        })
         setSerializedMdx(mdxSource)
+        setFrontmatter(data)
       } catch (e) {
         console.warn('syntax error', e)
       }
@@ -48,23 +98,42 @@ export const MdxEditor = () => {
     }
   }
 
+  const extractEditedArticle = (): EditedArticle | undefined => {
+    if (hasRenderError) return
+    const validatedEditedArticle = validateEditedArticle(frontmatter)
+    if (!validatedEditedArticle) return
+    if (mdxString === '') return
+
+    return {
+      ...validatedEditedArticle,
+      text: mdxString,
+    }
+  }
+
   return (
-    <div className="flex w-full p-2">
-      <div className="w-1/2 pr-4">
-        <textarea
-          className="w-full border rounded-lg resize-none outline-none text-lg p-2 h-mdx-editor"
-          rows={30}
-          value={mdxString}
-          onChange={(e) => setMdxString(e.target.value)}
-          onKeyDown={handleKeyDown}
-        ></textarea>
-      </div>
-      <div className="w-1/2">
-        {serializedMdx && (
-          <MdxLayout editable={true}>
-            <MDXRemote {...serializedMdx} components={components} />
-          </MdxLayout>
-        )}
+    <div>
+      <MdxEditorHeader getEditedArticle={extractEditedArticle} />
+      <div className="flex w-full p-2">
+        <div className="w-1/2 pr-4">
+          <textarea
+            className="w-full border rounded-lg resize-none outline-none text-lg p-2 h-mdx-editor"
+            rows={30}
+            value={mdxString}
+            onChange={(e) => setMdxString(e.target.value)}
+            onKeyDown={handleKeyDown}
+          ></textarea>
+        </div>
+        <div className="w-1/2">
+          {serializedMdx && (
+            <MdxLayout editable={true}>
+              <ErrorBoundary
+                onError={(state: boolean) => setHasRenderError(state)}
+              >
+                <MDXRemote {...serializedMdx} components={components} />
+              </ErrorBoundary>
+            </MdxLayout>
+          )}
+        </div>
       </div>
     </div>
   )
