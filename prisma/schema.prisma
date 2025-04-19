@@ -1,0 +1,58 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator zod {
+  provider                  = "zod-prisma-types"
+  createRelationValuesTypes = true
+}
+
+model AdminUser {
+  id       String @id @default(uuid())
+  username String @unique
+  password String
+}
+
+model Article {
+  id        String   @id @default(uuid())
+  title     String
+  text      String
+  isPublic  Boolean
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  articleDomain   ArticleDomain     @relation(fields: [articleDomainId], references: [id])
+  articleDomainId Int
+  articleCategory ArticleCategory[]
+}
+
+enum Domain {
+  FRONTEND
+  BACKEND
+  INFRA
+}
+
+model ArticleDomain {
+  id   Int    @id @default(autoincrement())
+  name Domain
+
+  article Article[]
+}
+
+model ArticleCategory {
+  id   Int    @id @default(autoincrement())
+  name String
+
+  article Article[]
+}
