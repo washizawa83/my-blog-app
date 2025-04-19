@@ -1,6 +1,8 @@
 import NextAuth from "next-auth"
 import { authConfig } from "../../../../../auth.config"
 
+export const runtime = 'edge'
+
 const handler = NextAuth(authConfig)
 
 export const GET = handler.handlers.GET;

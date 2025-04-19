@@ -2,6 +2,8 @@ import { MdxEditor } from '@/app/components/features/admin/MdxEditor'
 import { PageLayout } from '@/app/components/layouts/PageLayout'
 import { getArticleById } from '@/app/service/article/article'
 
+export const runtime = 'edge'
+
 type Props = {
   searchParams: Promise<{ [key: string]: string | undefined }>
 }
