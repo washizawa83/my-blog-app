@@ -7,8 +7,6 @@ import { getArticleById } from '@/app/service/article/article'
 import { getLoginState } from '@/app/service/auth/auth'
 import matter from 'gray-matter'
 
-export const runtime = 'edge'
-
 export default async function ArticleDetailPage({
   params,
 }: {
