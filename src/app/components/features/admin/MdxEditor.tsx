@@ -34,7 +34,7 @@ export type EditedArticle = {
 
 const INDENT = '  '
 
-const validateEditedArticle = (
+const validateFrontMatter = (
   frontmatter: Record<string, string | string[]>,
 ) => {
   const { title, domain, categories } = frontmatter
@@ -98,9 +98,9 @@ export const MdxEditor = () => {
     }
   }
 
-  const extractEditedArticle = (): EditedArticle | undefined => {
+  const validateArticle = (): EditedArticle | undefined => {
     if (hasRenderError) return
-    const validatedEditedArticle = validateEditedArticle(frontmatter)
+    const validatedEditedArticle = validateFrontMatter(frontmatter)
     if (!validatedEditedArticle) return
     if (mdxString === '') return
 
@@ -112,7 +112,7 @@ export const MdxEditor = () => {
 
   return (
     <div>
-      <MdxEditorHeader getEditedArticle={extractEditedArticle} />
+      <MdxEditorHeader validateArticle={validateArticle} />
       <div className="flex w-full p-2">
         <div className="w-1/2 pr-4">
           <textarea

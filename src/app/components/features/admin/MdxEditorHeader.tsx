@@ -6,16 +6,16 @@ import { Button } from '../../forms.tsx/Button'
 import { EditedArticle } from './MdxEditor'
 
 type Props = {
-  getEditedArticle: () => EditedArticle | undefined
+  validateArticle: () => EditedArticle | undefined
 }
 
 const redirectUrl = '/admin'
 
-export const MdxEditorHeader = ({ getEditedArticle }: Props) => {
+export const MdxEditorHeader = ({ validateArticle }: Props) => {
   const router = useRouter()
 
   const post = async (isPublic: boolean) => {
-    const article = getEditedArticle()
+    const article = validateArticle()
     if (!article) return
 
     try {
