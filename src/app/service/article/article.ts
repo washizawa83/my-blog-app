@@ -20,7 +20,10 @@ export const upsertArticleCategories = async (categories: string[]) => {
 
 export const getArticleCategory = async (category: string) => {
   return await prisma.articleCategory.findFirst({
-    where: {name: category}
+    where: {name: {
+      equals: category,
+      mode: 'insensitive',
+    }}
   })
 }
 

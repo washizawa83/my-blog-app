@@ -18,7 +18,7 @@ export const ArticleList = ({ articles }: Props) => {
     <ul>
       {articles.map((article, i) => (
         <li key={i}>
-          <ArticleItem article={article} />
+          <ArticleItem article={article} domain={article.articleDomain.name} />
         </li>
       ))}
     </ul>
