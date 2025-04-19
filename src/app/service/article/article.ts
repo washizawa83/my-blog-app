@@ -33,13 +33,20 @@ export const getArticleDomain = async (domain: DomainType) => {
   })
 }
 
-export const postArticle = async (article: EditedArticle, isPublic: boolean) => {
+const prepareArticleData = async (article: EditedArticle) => {
   const categories = await upsertArticleCategories(article.categories)
   const categoryIds = categories.map((category) => ({
     id: category.id
   }))
   const domain = await getArticleDomain(article.domain as DomainType)
-  if (!domain) return
+
+  return {categoryIds, domain}
+}
+
+export const postArticle = async (article: EditedArticle, isPublic: boolean) => {
+  if (!(await getLoginState())) return new Error('Unauthorized')
+  const {categoryIds, domain} = await prepareArticleData(article)
+  if (!domain) return new Error('Invalid domain')
 
   return await prisma.article.create({
     data: {
@@ -56,12 +63,9 @@ export const postArticle = async (article: EditedArticle, isPublic: boolean) => 
 }
 
 export const editArticle = async (articleId: string, article: EditedArticle, isPublic: boolean) => {
-  const categories = await upsertArticleCategories(article.categories)
-  const categoryIds = categories.map((category) => ({
-    id: category.id
-  }))
-  const domain = await getArticleDomain(article.domain as DomainType)
-  if (!domain) return
+  if (!(await getLoginState())) return new Error('Unauthorized')
+  const {categoryIds, domain} = await prepareArticleData(article)
+  if (!domain) return new Error('Invalid domain')
 
   return await prisma.article.update({
     where: { id: articleId },
@@ -114,11 +118,10 @@ export const getArticleById = async (id: string): Promise<ArticleWithRelations> 
 }
 
 export const deleteArticle = async (id: string) => {
-  if (await getLoginState()) {
-    return await prisma.article.delete({
-      where: {
-        id
-      }
-    })
-  }
+  if (!(await getLoginState())) return new Error('Unauthorized')
+  return await prisma.article.delete({
+    where: {
+      id
+    }
+  })
 }
