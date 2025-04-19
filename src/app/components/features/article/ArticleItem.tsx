@@ -29,16 +29,18 @@ export const ArticleItem = ({ article, ...variants }: Props) => {
   return (
     <Link href={redirectUrl}>
       <div className={listItem({ ...variants })}>
-        <h3 className="text-2xl h-10 mb-3">{article.title}</h3>
+        <h3 className="text-2xl min-h-10 mb-3 line-clamp-2">{article.title}</h3>
         <div className="flex justify-between">
-          <ul className="flex">
+          <ul className="flex flex-wrap">
             {article.articleCategory.map((category, i) => (
-              <li key={i} className="mr-2">
+              <li key={i} className="mr-2 py-1">
                 <Chip label={category.name} />
               </li>
             ))}
           </ul>
-          <span>{article.createdAt.toLocaleDateString('ja-JP')}</span>
+          <span className="flex items-end">
+            {article.createdAt.toLocaleDateString('ja-JP')}
+          </span>
         </div>
       </div>
     </Link>

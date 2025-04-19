@@ -22,14 +22,14 @@ export default async function ArticleDetailPage({
   return (
     <PageLayout>
       <div className="pb-8 border-b-2 border-zinc-500">
+        {isLogin && <AdminMenuButton articleId={id} />}
         <div className="flex justify-between items-center">
           <h2 className="text-2xl mb-4 font-bold">{article.title}</h2>
-          {isLogin && <AdminMenuButton articleId={id} />}
         </div>
         <div className="flex justify-between">
-          <ul className="flex">
+          <ul className="flex flex-wrap">
             {article.articleCategory.map((category, i) => (
-              <li key={i} className="mr-2">
+              <li key={i} className="mr-2 py-1">
                 <Chip label={category.name} />
               </li>
             ))}

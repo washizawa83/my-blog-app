@@ -125,10 +125,10 @@ export const MdxEditor = ({ editorialArticle }: Props) => {
         validateArticle={validateArticle}
         editorialArticleId={editorialArticle?.id}
       />
-      <div className="flex w-full p-2">
+      <div className="flex w-full p-2 bg-article rounded-lg">
         <div className="w-1/2 pr-4">
           <textarea
-            className="w-full border rounded-lg resize-none outline-none text-lg p-2 h-mdx-editor bg-article"
+            className="w-full resize-none outline-none text-lg p-2 h-mdx-editor border-r border-zinc-500"
             rows={30}
             value={mdxString}
             onChange={(e) => setMdxString(e.target.value)}

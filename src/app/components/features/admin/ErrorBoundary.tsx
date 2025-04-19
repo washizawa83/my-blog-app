@@ -37,8 +37,9 @@ export class ErrorBoundary extends React.Component<Props, State> {
   render() {
     if (this.state.hasError) {
       return (
-        <span style={{ color: 'red' }}>
+        <span className="flex items-center text-red-500">
           <BsExclamationCircle />
+          <span className="ml-2 text-sm">フロントマターの入力が不正です</span>
         </span>
       )
     }
