@@ -4,6 +4,7 @@ import { EditedArticle } from "@/app/components/features/admin/MdxEditor"
 import { prisma } from "../db-util"
 import { v4 as uuidv4 } from 'uuid'
 import { ArticleWithRelations, DomainType } from "../../../../prisma/generated/zod"
+import { getLoginState } from "../auth/auth"
 
 export const upsertArticleCategories = async (categories: string[]) => {
   return Promise.all(categories.map(async (category) => {
@@ -19,7 +20,10 @@ export const upsertArticleCategories = async (categories: string[]) => {
 
 export const getArticleCategory = async (category: string) => {
   return await prisma.articleCategory.findFirst({
-    where: {name: category}
+    where: {name: {
+      equals: category,
+      mode: 'insensitive',
+    }}
   })
 }
 
@@ -51,6 +55,29 @@ export const postArticle = async (article: EditedArticle, isPublic: boolean) => 
   })
 }
 
+export const editArticle = async (articleId: string, article: EditedArticle, isPublic: boolean) => {
+  const categories = await upsertArticleCategories(article.categories)
+  const categoryIds = categories.map((category) => ({
+    id: category.id
+  }))
+  const domain = await getArticleDomain(article.domain as DomainType)
+  if (!domain) return
+
+  return await prisma.article.update({
+    where: { id: articleId },
+    data: {
+      id: uuidv4(),
+      title: article.title,
+      text: article.text,
+      isPublic,
+      articleCategory: {
+        set: categoryIds
+      },
+      articleDomainId: domain.id
+    }
+  })
+}
+
 export const getArticles = async (): Promise<ArticleWithRelations[]> => {
   return await prisma.article.findMany({
     include: {
@@ -72,4 +99,26 @@ export const getArticleInfos = async (): Promise<ArticleInfoWithRelations[]> => 
       articleDomain: true
     }
   }) as ArticleInfoWithRelations[]
+}
+
+export const getArticleById = async (id: string): Promise<ArticleWithRelations> => {
+  return await prisma.article.findFirst({
+    where: {
+      id: id
+    },
+    include: {
+      articleCategory: true,
+      articleDomain: true
+    }
+  }) as ArticleWithRelations
+}
+
+export const deleteArticle = async (id: string) => {
+  if (await getLoginState()) {
+    return await prisma.article.delete({
+      where: {
+        id
+      }
+    })
+  }
 }

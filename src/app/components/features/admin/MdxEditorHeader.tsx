@@ -1,25 +1,34 @@
 'use client'
 
-import { postArticle } from '@/app/service/article/article'
+import { editArticle, postArticle } from '@/app/service/article/article'
 import { useRouter } from 'next/navigation'
 import { Button } from '../../forms.tsx/Button'
 import { EditedArticle } from './MdxEditor'
 
 type Props = {
-  getEditedArticle: () => EditedArticle | undefined
+  validateArticle: () => EditedArticle | undefined
+  editorialArticleId?: string
 }
 
 const redirectUrl = '/admin'
 
-export const MdxEditorHeader = ({ getEditedArticle }: Props) => {
+export const MdxEditorHeader = ({
+  validateArticle,
+  editorialArticleId,
+}: Props) => {
   const router = useRouter()
+  const isEdit = editorialArticleId !== undefined
 
   const post = async (isPublic: boolean) => {
-    const article = getEditedArticle()
+    const article = validateArticle()
     if (!article) return
 
     try {
-      await postArticle(article, isPublic)
+      if (isEdit) {
+        await editArticle(editorialArticleId, article, isPublic)
+      } else {
+        await postArticle(article, isPublic)
+      }
       router.push(redirectUrl)
     } catch (e) {
       console.error(e)
@@ -31,7 +40,11 @@ export const MdxEditorHeader = ({ getEditedArticle }: Props) => {
         <Button label="pending" color="blue" handleClick={() => post(false)} />
       </div>
       <div className="ml-4">
-        <Button label="post" color="green" handleClick={() => post(true)} />
+        <Button
+          label={`${isEdit ? 'edit' : 'post'}`}
+          color="green"
+          handleClick={() => post(true)}
+        />
       </div>
     </div>
   )
