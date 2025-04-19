@@ -22,7 +22,7 @@
 
 @layer utilities {
   .h-mdx-editor {
-    height: calc(100vh - 100px);
+    height: calc(100vh - 200px);
   }
   .bg-article {
     background-color: #151C26;

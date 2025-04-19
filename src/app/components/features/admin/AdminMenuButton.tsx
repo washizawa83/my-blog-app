@@ -33,7 +33,7 @@ export const AdminMenuButton = ({ articleId }: Props) => {
   ]
 
   return (
-    <div className="flex justify-end mb-4">
+    <div className="flex justify-end mb-2">
       <Tooltip options={tooltipOptions} />
     </div>
   )

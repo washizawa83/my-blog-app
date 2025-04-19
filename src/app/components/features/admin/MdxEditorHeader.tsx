@@ -35,13 +35,17 @@ export const MdxEditorHeader = ({
     }
   }
   return (
-    <div className="flex justify-end w-full p-2">
+    <div className="flex justify-end w-full p-2 mb-4">
       <div>
-        <Button label="pending" color="blue" handleClick={() => post(false)} />
+        <Button
+          label="保留にする"
+          color="blue"
+          handleClick={() => post(false)}
+        />
       </div>
       <div className="ml-4">
         <Button
-          label={`${isEdit ? 'edit' : 'post'}`}
+          label={`${isEdit ? '編集を完了' : '投稿する'}`}
           color="green"
           handleClick={() => post(true)}
         />
