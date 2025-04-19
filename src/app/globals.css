@@ -2,7 +2,7 @@
 @plugin "@tailwindcss/typography";
 
 :root {
-  --background: #151C26;
+  --background: #19212c;
   --foreground: #f6f6f6;
 }
 
@@ -23,6 +23,12 @@
 @layer utilities {
   .h-mdx-editor {
     height: calc(100vh - 100px);
+  }
+  .bg-article {
+    background-color: #151C26;
+  }
+  .bg-default {
+    background-color: #101823;
   }
 }
 

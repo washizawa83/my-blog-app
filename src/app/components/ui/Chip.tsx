@@ -6,9 +6,9 @@ export const chip = tv({
   base: 'px-3 py-1 border rounded-xl text-xs',
   variants: {
     color: {
-      emerald: 'border-emerald-500 bg-emerald-500/[.3]',
-      sky: 'border-sky-500 bg-sky-500/[.3]',
-      pink: 'border-pink-500 bg-pink-500/[.3]',
+      emerald: 'border-emerald-700 bg-emerald-700/[.3]',
+      sky: 'border-sky-700 bg-sky-700/[.3]',
+      pink: 'border-pink-700 bg-pink-700/[.3]',
     },
     size: {
       xs: 'text-xs',

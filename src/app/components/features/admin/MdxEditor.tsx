@@ -116,7 +116,7 @@ export const MdxEditor = () => {
       <div className="flex w-full p-2">
         <div className="w-1/2 pr-4">
           <textarea
-            className="w-full border rounded-lg resize-none outline-none text-lg p-2 h-mdx-editor"
+            className="w-full border rounded-lg resize-none outline-none text-lg p-2 h-mdx-editor bg-article"
             rows={30}
             value={mdxString}
             onChange={(e) => setMdxString(e.target.value)}
