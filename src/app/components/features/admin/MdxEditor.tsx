@@ -4,11 +4,18 @@ import matter from 'gray-matter'
 import { MDXRemote, MDXRemoteSerializeResult } from 'next-mdx-remote'
 import { serialize } from 'next-mdx-remote/serialize'
 import { useEffect, useState } from 'react'
-import { DomainType } from '../../../../../prisma/generated/zod'
+import {
+  ArticleWithRelations,
+  DomainType,
+} from '../../../../../prisma/generated/zod'
 import { Button } from '../../forms.tsx/Button'
 import MdxLayout from '../../mdx/MdxLayout'
 import { ErrorBoundary } from './ErrorBoundary'
 import { MdxEditorHeader } from './MdxEditorHeader'
+
+type Props = {
+  editorialArticle?: ArticleWithRelations
+}
 
 const components = { Button }
 
@@ -51,9 +58,11 @@ const validateFrontMatter = (
   return { title, domain: domain.toUpperCase() as DomainType, categories }
 }
 
-export const MdxEditor = () => {
+export const MdxEditor = ({ editorialArticle }: Props) => {
   const [hasRenderError, setHasRenderError] = useState(false)
-  const [mdxString, setMdxString] = useState(templateFrontMatter)
+  const [mdxString, setMdxString] = useState(
+    editorialArticle?.text ?? templateFrontMatter,
+  )
   const [serializedMdx, setSerializedMdx] =
     useState<
       MDXRemoteSerializeResult<Record<string, unknown>, Record<string, unknown>>
@@ -112,7 +121,10 @@ export const MdxEditor = () => {
 
   return (
     <div>
-      <MdxEditorHeader validateArticle={validateArticle} />
+      <MdxEditorHeader
+        validateArticle={validateArticle}
+        editorialArticleId={editorialArticle?.id}
+      />
       <div className="flex w-full p-2">
         <div className="w-1/2 pr-4">
           <textarea
