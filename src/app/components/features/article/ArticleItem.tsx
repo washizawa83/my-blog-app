@@ -24,14 +24,18 @@ type Props = {
 } & articleItemVariants
 
 export const ArticleItem = ({ article, ...variants }: Props) => {
+  const redirectUrl = `/pages/article/detail/${article.id}`
+
   return (
-    <Link href="">
+    <Link href={redirectUrl}>
       <div className={listItem({ ...variants })}>
         <h3 className="text-2xl h-10 mb-3">{article.title}</h3>
         <div className="flex justify-between">
-          <ul>
+          <ul className="flex">
             {article.articleCategory.map((category, i) => (
-              <Chip key={i} color="sky" label={category.name} />
+              <li key={i} className="mr-2">
+                <Chip label={category.name} />
+              </li>
             ))}
           </ul>
           <span>{article.createdAt.toLocaleDateString('ja-JP')}</span>
