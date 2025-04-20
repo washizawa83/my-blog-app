@@ -3,7 +3,7 @@ import { PageLayout } from './components/layouts/PageLayout'
 import { getArticleInfos } from './service/article/article'
 
 export default async function Home() {
-  const articles = await getArticleInfos()
+  const articles = await getArticleInfos(true)
   console.log(articles)
 
   return (
