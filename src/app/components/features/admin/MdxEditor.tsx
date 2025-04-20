@@ -1,5 +1,6 @@
 'use client'
 
+import { MdxOptions } from '@/app/lib/mdx'
 import matter from 'gray-matter'
 import { MDXRemote, MDXRemoteSerializeResult } from 'next-mdx-remote'
 import { serialize } from 'next-mdx-remote/serialize'
@@ -77,6 +78,7 @@ export const MdxEditor = ({ editorialArticle }: Props) => {
         const { content, data } = matter(mdxString)
         const mdxSource = await serialize(content, {
           scope: data,
+          mdxOptions: MdxOptions,
         })
         setSerializedMdx(mdxSource)
         setFrontmatter(data)

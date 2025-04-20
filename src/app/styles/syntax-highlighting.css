@@ -1,0 +1,75 @@
+figure[data-rehype-pretty-code-figure] {
+  @apply w-full mt-2 rounded-[--radius-base] bg-[--iris-2];
+}
+ 
+figure[data-rehype-pretty-code-figure] pre {
+  @apply py-4 overflow-x-auto;
+}
+
+figure[data-rehype-pretty-code-figure] [data-line] {
+  @apply mt-0 pr-2 border-l-2 border-transparent;
+}
+
+[data-highlighted-line] {
+  @apply !bg-[--plum-3] !border-[--plum-8] bg-[#c8c8ff1a];
+}
+
+figcaption[data-rehype-pretty-code-title] {
+  @apply text-sm py-1 px-4 border-b text-[--iris-9] mt-0;
+}
+ 
+figcaption[data-rehype-pretty-code-title] + pre {
+  @apply mt-0;
+}
+
+code[data-line-numbers] {
+  counter-reset: line;
+}
+
+[data-chars-id="a"] {
+  background-color: #9f123980;
+  border-bottom: 2px solid #db2777;
+  border-radius: 4px;
+  padding: 2px;
+  font-weight: bold;
+}
+
+[data-chars-id="b"] {
+  background-color: #854d0e80;
+  border-bottom: 2px solid #ca8a04;
+  border-radius: 4px;
+  color: #fee047;
+  padding: 2px;
+  font-weight: bold;
+}
+
+[data-chars-id="c"] {
+  background-color: #6b21a880;
+  border-bottom: 2px solid #9333ea;
+  border-radius: 4px;
+  color: #e9d5ff;
+  padding: 2px;
+  font-weight: bold;
+}
+ 
+code[data-line-numbers] > [data-line]::before {
+  display: inline-block;
+  width: 12px;
+  margin-right: 1rem;
+  color: #545861;
+  text-align: right;
+  content: counter(line);
+  counter-increment: line;
+}
+ 
+code[data-line-numbers-max-digits="2"] > [data-line]::before {
+  width: 1.25rem;
+}
+ 
+code[data-line-numbers-max-digits="3"] > [data-line]::before {
+  width: 1.75rem;
+}
+ 
+code[data-line-numbers-max-digits="4"] > [data-line]::before {
+  width: 2.25rem;
+}
