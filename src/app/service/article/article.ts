@@ -93,10 +93,13 @@ export const getArticles = async (): Promise<ArticleWithRelations[]> => {
 
 export type ArticleInfoWithRelations = Omit<ArticleWithRelations, 'text'>
 
-export const getArticleInfos = async (): Promise<ArticleInfoWithRelations[]> => {
+export const getArticleInfos = async (isPublic: boolean): Promise<ArticleInfoWithRelations[]> => {
   return await prisma.article.findMany({
+    where: {
+      isPublic
+    },
     omit: {
-      text: true
+      text: true,
     },
     include: {
       articleCategory: true,
