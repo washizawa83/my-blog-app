@@ -4,6 +4,7 @@ import { getArticleInfos } from './service/article/article'
 
 export default async function Home() {
   const articles = await getArticleInfos()
+  console.log(articles)
 
   return (
     <PageLayout>
