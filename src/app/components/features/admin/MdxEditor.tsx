@@ -4,6 +4,7 @@ import matter from 'gray-matter'
 import { MDXRemote, MDXRemoteSerializeResult } from 'next-mdx-remote'
 import { serialize } from 'next-mdx-remote/serialize'
 import { useEffect, useState } from 'react'
+import rehypePrettyCode from 'rehype-pretty-code'
 import {
   ArticleWithRelations,
   DomainType,
@@ -77,6 +78,19 @@ export const MdxEditor = ({ editorialArticle }: Props) => {
         const { content, data } = matter(mdxString)
         const mdxSource = await serialize(content, {
           scope: data,
+          mdxOptions: {
+            rehypePlugins: [
+              [
+                rehypePrettyCode,
+                {
+                  theme: 'one-dark-pro',
+                  keepBackground: false,
+                  defaultLang: 'ts',
+                  showLineNumbers: true,
+                },
+              ],
+            ],
+          },
         })
         setSerializedMdx(mdxSource)
         setFrontmatter(data)
