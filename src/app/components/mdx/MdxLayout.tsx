@@ -23,7 +23,7 @@ const ulConfig = 'prose-ul:my-2'
 
 const blockquoteConfig =
   'prose-blockquote:bg-neutral-500 prose-blockquote:rounded prose-blockquote:py-1 prose-blockquote:my-2'
-const codeConfig = 'prose-code:text-green-500'
+const codeConfig = 'prose-code:text-teal-400'
 
 export default function MdxLayout({ children, editable = false }: Props) {
   // Create any shared layout or styles here
