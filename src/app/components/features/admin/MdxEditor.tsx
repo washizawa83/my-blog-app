@@ -1,15 +1,15 @@
 'use client'
 
-import { MdxOptions } from '@/app/lib/mdx'
+import { MdxOptions, syncroll, validateFrontMatter } from '@/app/lib/mdx'
 import matter from 'gray-matter'
 import { MDXRemote, MDXRemoteSerializeResult } from 'next-mdx-remote'
 import { serialize } from 'next-mdx-remote/serialize'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import {
   ArticleWithRelations,
   DomainType,
 } from '../../../../../prisma/generated/zod'
-import { Button } from '../../forms.tsx/Button'
+import { Button } from '../../mdx/components/Button'
 import MdxLayout from '../../mdx/MdxLayout'
 import { ErrorBoundary } from './ErrorBoundary'
 import { MdxEditorHeader } from './MdxEditorHeader'
@@ -42,23 +42,6 @@ export type EditedArticle = {
 
 const INDENT = '  '
 
-const validateFrontMatter = (
-  frontmatter: Record<string, string | string[]>,
-) => {
-  const { title, domain, categories } = frontmatter
-  if (!title || !domain || !categories) return
-  if (
-    Array.isArray(title) ||
-    Array.isArray(domain) ||
-    !Array.isArray(categories)
-  )
-    return
-  if (domain !== 'frontend' && domain !== 'backend' && domain !== 'infra')
-    return
-
-  return { title, domain: domain.toUpperCase() as DomainType, categories }
-}
-
 export const MdxEditor = ({ editorialArticle }: Props) => {
   const [hasRenderError, setHasRenderError] = useState(false)
   const [mdxString, setMdxString] = useState(
@@ -71,6 +54,9 @@ export const MdxEditor = ({ editorialArticle }: Props) => {
   const [frontmatter, setFrontmatter] = useState<
     Record<string, string | string[]>
   >({})
+
+  const textareaRef = useRef<HTMLTextAreaElement>(null)
+  const previewRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     ;(async () => {
@@ -130,6 +116,8 @@ export const MdxEditor = ({ editorialArticle }: Props) => {
       <div className="flex w-full p-2 bg-article rounded-lg">
         <div className="w-1/2 pr-4">
           <textarea
+            ref={textareaRef}
+            onScroll={() => syncroll(textareaRef, previewRef)}
             className="w-full resize-none outline-none text-lg p-2 h-mdx-editor border-r border-zinc-500"
             rows={30}
             value={mdxString}
@@ -139,7 +127,7 @@ export const MdxEditor = ({ editorialArticle }: Props) => {
         </div>
         <div className="w-1/2">
           {serializedMdx && (
-            <MdxLayout editable={true}>
+            <MdxLayout editable={true} ref={previewRef}>
               <ErrorBoundary
                 onError={(state: boolean) => setHasRenderError(state)}
               >
