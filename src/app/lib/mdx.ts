@@ -2,11 +2,13 @@ import { CompileOptions } from "@mdx-js/mdx";
 import { compileMDX } from "next-mdx-remote/rsc";
 import { serialize } from "next-mdx-remote/serialize"
 import rehypePrettyCode from 'rehype-pretty-code'
+import remarkGfm from 'remark-gfm'
 import { Button } from "../components/mdx/components/Button";
 
 export const MdxOptions: Omit<CompileOptions, 'outputFormat' | 'providerImportSource'> & {
   useDynamicImport?: boolean;
 } = {
+  remarkPlugins: [remarkGfm],
   rehypePlugins: [
     [
       rehypePrettyCode,
