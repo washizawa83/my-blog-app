@@ -34,7 +34,7 @@ export const parseMdxStringByRemote = async (data: string) => {
     source: data,
     options: {
       mdxOptions: {
-        rehypePlugins: [[rehypePrettyCode, MdxOptions]],
+        ...MdxOptions
       },
     },
     components: {Button}
