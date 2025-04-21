@@ -1,8 +1,8 @@
 import { AdminMenuButton } from '@/app/components/features/admin/AdminMenuButton'
 import { PageLayout } from '@/app/components/layouts/PageLayout'
-import { MdxRenderer } from '@/app/components/mdx/MdxRenderer'
+import MdxLayout from '@/app/components/mdx/MdxLayout'
 import { Chip } from '@/app/components/ui/Chip'
-import { parseMdxString } from '@/app/lib/mdx'
+import { parseMdxStringByRemote } from '@/app/lib/mdx'
 import { getArticleById } from '@/app/service/article/article'
 import { getLoginState } from '@/app/service/auth/auth'
 import matter from 'gray-matter'
@@ -15,8 +15,8 @@ export default async function ArticleDetailPage({
   const { id } = await params
   const article = await getArticleById(id)
   if (!article) return
-  const { content, data } = matter(article.text)
-  const mdxSource = await parseMdxString(content, data)
+  const { content } = matter(article.text)
+  const mdxSourceByRemote = await parseMdxStringByRemote(content)
   const isLogin = await getLoginState()
 
   return (
@@ -38,7 +38,7 @@ export default async function ArticleDetailPage({
         </div>
       </div>
       <div className="bg-article px-4 py-8 rounded-b-lg">
-        <MdxRenderer mdxSource={mdxSource} />
+        <MdxLayout>{mdxSourceByRemote.content}</MdxLayout>
       </div>
     </PageLayout>
   )
