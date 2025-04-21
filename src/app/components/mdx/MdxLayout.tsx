@@ -1,6 +1,9 @@
+import { RefObject } from 'react'
+
 type Props = {
   children: React.ReactNode
   editable?: boolean
+  ref?: RefObject<HTMLDivElement | null>
 }
 
 const textColor = 'text-slate-300'
@@ -27,10 +30,11 @@ const blockquoteConfig =
 const preConfig = 'prose-pre:bg-[#1F2028]'
 const codeConfig = 'prose-code:text-teal-400'
 
-export default function MdxLayout({ children, editable = false }: Props) {
+export default function MdxLayout({ children, editable = false, ref }: Props) {
   // Create any shared layout or styles here
   return (
     <div
+      ref={ref}
       className={`
       prose
       ${editable && 'h-mdx-editor overflow-y-auto'}
