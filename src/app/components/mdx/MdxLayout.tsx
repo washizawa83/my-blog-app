@@ -1,10 +1,13 @@
+import { RefObject } from 'react'
+
 type Props = {
   children: React.ReactNode
   editable?: boolean
+  ref?: RefObject<HTMLDivElement | null>
 }
 
 const textColor = 'text-slate-300'
-const utilConfig = `${textColor} max-w-full break-words`
+const utilConfig = `${textColor} break-words`
 
 const h1Config = `prose-h1:text-4xl prose-h1:mt-18 prose-h1:mb-0`
 const h2Config = `prose-h2:text-lg prose-h2:mt-16 prose-h2:mb-0`
@@ -27,12 +30,15 @@ const blockquoteConfig =
 const preConfig = 'prose-pre:bg-[#1F2028]'
 const codeConfig = 'prose-code:text-teal-400'
 
-export default function MdxLayout({ children, editable = false }: Props) {
+export default function MdxLayout({ children, editable = false, ref }: Props) {
   // Create any shared layout or styles here
   return (
     <div
+      ref={ref}
       className={`
       prose
+      post
+      min-w-full
       ${editable && 'h-mdx-editor overflow-y-auto'}
       ${utilConfig}
       ${headingConfig}

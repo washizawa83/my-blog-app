@@ -4,6 +4,9 @@ import { serialize } from "next-mdx-remote/serialize"
 import rehypePrettyCode from 'rehype-pretty-code'
 import remarkGfm from 'remark-gfm'
 import { Button } from "../components/mdx/components/Button";
+import { RefObject } from "react";
+import { DomainType } from "../../../prisma/generated/zod";
+import rehypeSlug from "rehype-slug";
 
 export const MdxOptions: Omit<CompileOptions, 'outputFormat' | 'providerImportSource'> & {
   useDynamicImport?: boolean;
@@ -19,6 +22,7 @@ export const MdxOptions: Omit<CompileOptions, 'outputFormat' | 'providerImportSo
         showLineNumbers: true,
       },
     ],
+    rehypeSlug,
   ],
 }
 
@@ -39,4 +43,37 @@ export const parseMdxStringByRemote = async (data: string) => {
     },
     components: {Button}
   })
+}
+
+export const validateFrontMatter = (
+  frontmatter: Record<string, string | string[]>,
+) => {
+  const { title, domain, categories } = frontmatter
+  if (!title || !domain || !categories) return
+  if (
+    Array.isArray(title) ||
+    Array.isArray(domain) ||
+    !Array.isArray(categories)
+  )
+    return
+  if (domain !== 'frontend' && domain !== 'backend' && domain !== 'infra')
+    return
+
+  return { title, domain: domain.toUpperCase() as DomainType, categories }
+}
+
+export const syncroll = (
+  textareaRef: RefObject<HTMLTextAreaElement | null>,
+  previewRef: RefObject<HTMLDivElement | null>,
+) => {
+  const textarea = textareaRef.current
+  const preview = previewRef.current
+
+  if (!textarea || !preview) return
+
+  const scrollRatio =
+    textarea.scrollTop / (textarea.scrollHeight - textarea.clientHeight)
+
+  preview.scrollTop =
+    scrollRatio * (preview.scrollHeight - preview.clientHeight)
 }

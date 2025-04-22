@@ -1,6 +1,7 @@
 import { AdminMenuButton } from '@/app/components/features/admin/AdminMenuButton'
 import { PageLayout } from '@/app/components/layouts/PageLayout'
 import MdxLayout from '@/app/components/mdx/MdxLayout'
+import Toc from '@/app/components/mdx/Toc'
 import { Chip } from '@/app/components/ui/Chip'
 import { parseMdxStringByRemote } from '@/app/lib/mdx'
 import { getArticleById } from '@/app/service/article/article'
@@ -21,24 +22,31 @@ export default async function ArticleDetailPage({
 
   return (
     <PageLayout>
-      <div className="pb-8 border-b-2 border-zinc-500">
-        {isLogin && <AdminMenuButton articleId={id} />}
-        <div className="flex justify-between items-center">
-          <h2 className="text-2xl mb-4 font-bold">{article.title}</h2>
+      <div className="flex mb-56">
+        <div className="grow min-w-0">
+          <div className="pb-8 border-b-2 border-zinc-500">
+            {isLogin && <AdminMenuButton articleId={id} />}
+            <div className="flex justify-between items-center">
+              <h2 className="text-2xl mb-4 font-bold">{article.title}</h2>
+            </div>
+            <div className="flex justify-between">
+              <ul className="flex flex-wrap">
+                {article.articleCategory.map((category, i) => (
+                  <li key={i} className="mr-2 py-1">
+                    <Chip label={category.name} />
+                  </li>
+                ))}
+              </ul>
+              <span>{article.createdAt.toLocaleDateString('ja-JP')}</span>
+            </div>
+          </div>
+          <div className="bg-article px-4 py-8 rounded-b-lg">
+            <MdxLayout>{mdxSourceByRemote.content}</MdxLayout>
+          </div>
         </div>
-        <div className="flex justify-between">
-          <ul className="flex flex-wrap">
-            {article.articleCategory.map((category, i) => (
-              <li key={i} className="mr-2 py-1">
-                <Chip label={category.name} />
-              </li>
-            ))}
-          </ul>
-          <span>{article.createdAt.toLocaleDateString('ja-JP')}</span>
+        <div className="hidden lg:block w-[250px]">
+          <Toc />
         </div>
-      </div>
-      <div className="bg-article px-4 py-8 rounded-b-lg">
-        <MdxLayout>{mdxSourceByRemote.content}</MdxLayout>
       </div>
     </PageLayout>
   )
