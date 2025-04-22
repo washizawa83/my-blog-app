@@ -6,6 +6,7 @@ import remarkGfm from 'remark-gfm'
 import { Button } from "../components/mdx/components/Button";
 import { RefObject } from "react";
 import { DomainType } from "../../../prisma/generated/zod";
+import rehypeSlug from "rehype-slug";
 
 export const MdxOptions: Omit<CompileOptions, 'outputFormat' | 'providerImportSource'> & {
   useDynamicImport?: boolean;
@@ -21,6 +22,7 @@ export const MdxOptions: Omit<CompileOptions, 'outputFormat' | 'providerImportSo
         showLineNumbers: true,
       },
     ],
+    rehypeSlug,
   ],
 }
 
