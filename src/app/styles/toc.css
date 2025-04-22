@@ -1,0 +1,24 @@
+.toc-list .is-collapsible {
+  box-sizing: border-box;
+}
+
+.toc-list-item {
+  box-sizing: border-box;
+}
+
+.toc-link {
+  display: block;
+  font-size: 14px;
+  margin-bottom: 12px;
+  color: #cad5e2;
+  box-sizing: border-box;
+}
+
+.is-active-link {
+  border-bottom: 1px solid #096;
+}
+
+.node-name--H1 {
+  font-weight: bold;
+  color: #e2e8f1;
+}

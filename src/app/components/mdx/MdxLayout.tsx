@@ -7,7 +7,7 @@ type Props = {
 }
 
 const textColor = 'text-slate-300'
-const utilConfig = `${textColor} max-w-full break-words`
+const utilConfig = `${textColor} break-words`
 
 const h1Config = `prose-h1:text-4xl prose-h1:mt-18 prose-h1:mb-0`
 const h2Config = `prose-h2:text-lg prose-h2:mt-16 prose-h2:mb-0`
@@ -37,6 +37,8 @@ export default function MdxLayout({ children, editable = false, ref }: Props) {
       ref={ref}
       className={`
       prose
+      post
+      min-w-full
       ${editable && 'h-mdx-editor overflow-y-auto'}
       ${utilConfig}
       ${headingConfig}
