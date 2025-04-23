@@ -98,6 +98,9 @@ export const getArticleInfos = async (isPublic: boolean): Promise<ArticleInfoWit
     where: {
       isPublic
     },
+    orderBy: {
+      createdAt: 'desc',
+    },
     omit: {
       text: true,
     },
