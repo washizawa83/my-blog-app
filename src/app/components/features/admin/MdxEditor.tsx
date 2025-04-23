@@ -89,7 +89,7 @@ export const MdxEditor = ({ editorialArticle }: Props) => {
   }
 
   const insertImageNotation = (imageUrl: string) => {
-    const notation = `![](${imageUrl})`
+    const notation = `<img width="" alt="" src="${imageUrl}" />`
     const newValue =
       mdxString.substring(0, textareaCaret) +
       notation +
