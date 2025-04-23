@@ -43,14 +43,14 @@ const prepareArticleData = async (article: EditedArticle) => {
   return {categoryIds, domain}
 }
 
-export const postArticle = async (article: EditedArticle, isPublic: boolean) => {
+export const postArticle = async (articleId: string, article: EditedArticle, isPublic: boolean) => {
   if (!(await getLoginState())) return new Error('Unauthorized')
   const {categoryIds, domain} = await prepareArticleData(article)
   if (!domain) return new Error('Invalid domain')
 
   return await prisma.article.create({
     data: {
-      id: uuidv4(),
+      id: articleId,
       title: article.title,
       text: article.text,
       isPublic,

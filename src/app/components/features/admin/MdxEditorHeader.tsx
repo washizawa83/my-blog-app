@@ -6,6 +6,7 @@ import { Button } from '../../forms.tsx/Button'
 import { EditedArticle } from './MdxEditor'
 
 type Props = {
+  articleId: string
   validateArticle: () => EditedArticle | undefined
   editorialArticleId?: string
 }
@@ -13,6 +14,7 @@ type Props = {
 const redirectUrl = '/admin'
 
 export const MdxEditorHeader = ({
+  articleId,
   validateArticle,
   editorialArticleId,
 }: Props) => {
@@ -27,7 +29,7 @@ export const MdxEditorHeader = ({
       if (isEdit) {
         await editArticle(editorialArticleId, article, isPublic)
       } else {
-        await postArticle(article, isPublic)
+        await postArticle(articleId, article, isPublic)
       }
       router.push(redirectUrl)
     } catch (e) {
