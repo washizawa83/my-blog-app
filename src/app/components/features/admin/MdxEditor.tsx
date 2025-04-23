@@ -5,6 +5,7 @@ import matter from 'gray-matter'
 import { MDXRemote, MDXRemoteSerializeResult } from 'next-mdx-remote'
 import { serialize } from 'next-mdx-remote/serialize'
 import { useEffect, useRef, useState } from 'react'
+import { v4 as uuidv4 } from 'uuid'
 import {
   ArticleWithRelations,
   DomainType,
@@ -13,6 +14,7 @@ import { Button } from '../../mdx/components/Button'
 import MdxLayout from '../../mdx/MdxLayout'
 import { ErrorBoundary } from './ErrorBoundary'
 import { MdxEditorHeader } from './MdxEditorHeader'
+import { UploadImage } from './UploadImage'
 
 type Props = {
   editorialArticle?: ArticleWithRelations
@@ -43,6 +45,7 @@ export type EditedArticle = {
 const INDENT = '  '
 
 export const MdxEditor = ({ editorialArticle }: Props) => {
+  const [articleId] = useState(uuidv4())
   const [hasRenderError, setHasRenderError] = useState(false)
   const [mdxString, setMdxString] = useState(
     editorialArticle?.text ?? templateFrontMatter,
@@ -55,6 +58,7 @@ export const MdxEditor = ({ editorialArticle }: Props) => {
     Record<string, string | string[]>
   >({})
 
+  const [textareaCaret, setTextareaCaret] = useState(0)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
   const previewRef = useRef<HTMLDivElement>(null)
 
@@ -68,16 +72,34 @@ export const MdxEditor = ({ editorialArticle }: Props) => {
         })
         setSerializedMdx(mdxSource)
         setFrontmatter(data)
+        setTextareaCaret(updateTextareaCaret())
       } catch (e) {
         console.warn('syntax error', e)
       }
     })()
   }, [mdxString])
 
+  const updateTextareaCaret = () => {
+    const textareaCurrent = textareaRef.current
+    if (textareaCurrent?.selectionStart) {
+      return textareaCurrent.selectionStart
+    }
+
+    return textareaRef.current!.textLength
+  }
+
+  const insertImageNotation = (imageUrl: string) => {
+    const notation = `<img width="" alt="" src="${imageUrl}" />`
+    const newValue =
+      mdxString.substring(0, textareaCaret) +
+      notation +
+      mdxString.substring(textareaCaret)
+    setMdxString(newValue)
+  }
+
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === 'Tab') {
       e.preventDefault()
-
       const textarea = e.currentTarget
       const { selectionStart, selectionEnd } = textarea
       const newValue =
@@ -110,9 +132,16 @@ export const MdxEditor = ({ editorialArticle }: Props) => {
   return (
     <div>
       <MdxEditorHeader
+        articleId={articleId}
         validateArticle={validateArticle}
         editorialArticleId={editorialArticle?.id}
       />
+      <div>
+        <UploadImage
+          articleId={articleId}
+          insertImageNotation={insertImageNotation}
+        />
+      </div>
       <div className="flex w-full p-2 bg-article rounded-lg">
         <div className="w-1/2 pr-4">
           <textarea
