@@ -1,6 +1,9 @@
 'use client'
 
 import { uploadFile } from '@/app/service/aws/aws-client'
+import { useRef } from 'react'
+import { IoImageOutline } from 'react-icons/io5'
+import { IconContext } from 'react-icons/lib'
 
 type Props = {
   articleId: string
@@ -34,10 +37,25 @@ async function handleUpload(
 }
 
 export const UploadImage = ({ articleId, insertImageNotation }: Props) => {
+  const inputFileRef = useRef<HTMLInputElement>(null)
+
+  const onClick = () => {
+    inputFileRef?.current?.click()
+  }
+
   return (
-    <input
-      type="file"
-      onChange={(e) => handleUpload(e, articleId, insertImageNotation)}
-    />
+    <div>
+      <input
+        ref={inputFileRef}
+        className="hidden"
+        type="file"
+        onChange={(e) => handleUpload(e, articleId, insertImageNotation)}
+      />
+      <button className="bg-pink-500" onClick={onClick}>
+        <IconContext.Provider value={{ size: '22px' }}>
+          <IoImageOutline />
+        </IconContext.Provider>
+      </button>
+    </div>
   )
 }
