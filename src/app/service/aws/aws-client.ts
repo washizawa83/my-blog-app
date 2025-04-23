@@ -1,6 +1,6 @@
 'use server'
 
-import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3'
+import { S3Client, PutObjectCommand, DeleteObjectsCommand, ListObjectsV2Command } from '@aws-sdk/client-s3'
 
 const s3Client = new S3Client({
   region: process.env.AWS_REGION,
@@ -29,5 +29,32 @@ export async function uploadFile(base64: string, fileName: string, articleId: st
   } catch (error) {
     console.error("Error uploading file:", error);
     throw error;
+  }
+}
+
+export async function deleteFile(articleId: string) {
+  const Bucket = process.env.S3_BUCKET_NAME!
+  const Prefix = `articles/${articleId}/`
+
+  try {
+    const listResponse = await s3Client.send(
+      new ListObjectsV2Command({ Bucket, Prefix })
+    )
+
+    const contents = listResponse.Contents
+    if (!contents || contents.length === 0) {
+      return console.error("Error not exist file:");
+    }
+
+    const Objects = contents.map((obj) => ({ Key: obj.Key! }))
+
+    await s3Client.send(
+      new DeleteObjectsCommand({
+        Bucket,
+        Delete: { Objects },
+      })
+    )
+  } catch (error) {
+    console.error('Delete failed:', error)
   }
 }
