@@ -8,6 +8,20 @@ import { getArticleById } from '@/app/service/article/article'
 import { getLoginState } from '@/app/service/auth/auth'
 import matter from 'gray-matter'
 
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ id: string }>
+}) {
+  const { id } = await params
+  const article = await getArticleById(id)
+
+  return {
+    title: article?.title,
+    keywords: article?.articleCategory,
+  }
+}
+
 export default async function ArticleDetailPage({
   params,
 }: {
