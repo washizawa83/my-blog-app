@@ -3,8 +3,9 @@
 import { MDXRemote, MDXRemoteSerializeResult } from 'next-mdx-remote'
 import { Button } from '../forms.tsx/Button'
 import MdxLayout from './MdxLayout'
+import { Note } from './components/Note'
 
-const components = { Button }
+const components = { Button, Note }
 
 type Props = {
   mdxSource: MDXRemoteSerializeResult<

@@ -11,6 +11,7 @@ import {
   DomainType,
 } from '../../../../../prisma/generated/zod'
 import { Button } from '../../mdx/components/Button'
+import { Note } from '../../mdx/components/Note'
 import MdxLayout from '../../mdx/MdxLayout'
 import { ErrorBoundary } from './ErrorBoundary'
 import { MdxEditorHeader } from './MdxEditorHeader'
@@ -20,7 +21,7 @@ type Props = {
   editorialArticle?: ArticleWithRelations
 }
 
-const components = { Button }
+const components = { Button, Note }
 
 const frontMatterItem = {
   TITLE: 'title',
