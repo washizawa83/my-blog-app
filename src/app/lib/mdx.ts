@@ -7,6 +7,7 @@ import { Button } from "../components/mdx/components/Button";
 import { RefObject } from "react";
 import { DomainType } from "../../../prisma/generated/zod";
 import rehypeSlug from "rehype-slug";
+import { Note } from "../components/mdx/components/Note";
 
 export const MdxOptions: Omit<CompileOptions, 'outputFormat' | 'providerImportSource'> & {
   useDynamicImport?: boolean;
@@ -41,7 +42,7 @@ export const parseMdxStringByRemote = async (data: string) => {
         ...MdxOptions
       },
     },
-    components: {Button}
+    components: {Button, Note}
   })
 }
 
